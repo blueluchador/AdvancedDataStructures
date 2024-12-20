@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Trie", "src\AdvancedDataStructures.Trie\AdvancedDataStructures.Trie.csproj", "{95A37182-F58D-46F8-8AF6-D407D5DE0EE8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Tests", "tests\AdvancedDataStructures.Tests\AdvancedDataStructures.Tests.csproj", "{460EC157-DBF0-449D-A574-211DE313D3ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{95A37182-F58D-46F8-8AF6-D407D5DE0EE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95A37182-F58D-46F8-8AF6-D407D5DE0EE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95A37182-F58D-46F8-8AF6-D407D5DE0EE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{460EC157-DBF0-449D-A574-211DE313D3ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{460EC157-DBF0-449D-A574-211DE313D3ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{460EC157-DBF0-449D-A574-211DE313D3ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{460EC157-DBF0-449D-A574-211DE313D3ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
