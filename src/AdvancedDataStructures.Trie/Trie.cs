@@ -14,6 +14,11 @@ public class Trie : IEnumerable<string>
 
     public void Insert(string word)
     {
+        ArgumentNullException.ThrowIfNull(word);
+        
+        word = word.Trim(); // Trim leading and trailing spaces
+        if (word.Length == 0) return;
+
         var current = _root;
         foreach (char c in word)
         {
