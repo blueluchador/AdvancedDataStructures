@@ -100,20 +100,6 @@ public class TrieTests
     }
 
     [Fact]
-    public void QueryWords_PrefixIsEntireWord_ReturnsSubtreeWords()
-    {
-        var trie = new Trie();
-        trie.Insert("app");
-        trie.Insert("apple");
-        trie.Insert("application");
-        var result = trie.QueryWords("app");
-        Assert.Contains("app", result);
-        Assert.Contains("apple", result);
-        Assert.Contains("application", result);
-        Assert.Equal(3, result.Count);
-    }
-
-    [Fact]
     public void GetEnumerator_AllWordsInserted_ReturnsCorrectWords()
     {
         var trie = new Trie();
@@ -140,6 +126,20 @@ public class TrieTests
     {
         var trie = new Trie();
         Assert.Throws<ArgumentNullException>(() => trie.Insert(null!));
+    }
+
+    [Fact]
+    public void Search_NullWord_ThrowsException()
+    {
+        var trie = new Trie();
+        Assert.Throws<ArgumentNullException>(() => trie.Search(null!));
+    }
+
+    [Fact]
+    public void QueryWords_NullWord_ThrowsException()
+    {
+        var trie = new Trie();
+        Assert.Throws<ArgumentNullException>(() => trie.QueryWords(null!));
     }
 
     [Fact]
@@ -174,5 +174,60 @@ public class TrieTests
         trie.Insert("apple");
         Assert.True(trie.Search("apple"), "The word 'apple' was not found.");
         Assert.False(trie.Search("ap"), "Search should return false for a different word.");
+    }
+
+    [Fact]
+    public void CaseInsensitive_SearchExistingWord_ReturnsTrue()
+    {
+        var trie = new Trie();
+        trie.Insert("apple");
+        Assert.True(trie.Search("Apple"), "The word 'Apple' was not found.");
+    }
+    
+    [Fact]
+    public void CaseInsensitive_QueryWords_ValidPrefix_ReturnsSubtreeWords()
+    {
+        var trie = new Trie();
+        trie.Insert("App");
+        trie.Insert("Apple");
+        trie.Insert("Application");
+        var result = trie.QueryWords("APP");
+        Assert.Contains("app", result);
+        Assert.Contains("apple", result);
+        Assert.Contains("application", result);
+        Assert.Equal(3, result.Count);
+    }
+
+    [Fact]
+    public void CaseSensitive_SearchExistingWord_ShouldPassAndFailCorrectly()
+    {
+        var trie = new Trie(isCaseSensitive: true);
+        trie.Insert("Apple");
+        Assert.True(trie.Search("Apple"), "The word 'Apple' was not found.");
+        Assert.False(trie.Search("apple"), "Search should return false for the lowercase word 'apple'.");
+    }
+    
+    [Fact]
+    public void CaseSensitive_QueryWords_ShouldReturnSubtreeWords()
+    {
+        var trie = new Trie(isCaseSensitive: true);
+        trie.Insert("App");
+        trie.Insert("Apple");
+        trie.Insert("Application");
+        var result = trie.QueryWords("App");
+        Assert.Contains("App", result);
+        Assert.Contains("Apple", result);
+        Assert.Contains("Application", result);
+        Assert.Equal(3, result.Count);
+    }
+    
+    [Fact]
+    public void CaseSensitive_QueryWords_ShouldReturnEmpty()
+    {
+        var trie = new Trie(isCaseSensitive: true);
+        trie.Insert("App");
+        trie.Insert("Apple");
+        trie.Insert("Application");
+        Assert.Empty(trie.QueryWords("app"));
     }
 }

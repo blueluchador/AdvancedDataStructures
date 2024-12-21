@@ -11,12 +11,18 @@ public class Trie : IEnumerable<string>
     }
 
     private readonly TrieNode _root = new();
+    private readonly bool _isCaseSensitive;
+
+    public Trie(bool isCaseSensitive = false) // Default to case-insensitive
+    {
+        _isCaseSensitive = isCaseSensitive;
+    }
 
     public void Insert(string word)
     {
         ArgumentNullException.ThrowIfNull(word);
-        
-        word = word.Trim(); // Trim leading and trailing spaces
+
+        word = PrepareString(word);
         if (word.Length == 0) return;
 
         var current = _root;
@@ -31,12 +37,21 @@ public class Trie : IEnumerable<string>
 
     public bool Search(string word)
     {
+        ArgumentNullException.ThrowIfNull(word);
+
+        word = PrepareString(word);
+        if (word.Length == 0) return false;
+
         var current = _root;
         return word.All(c => current.Children.TryGetValue(c, out current)) && current.IsEndOfWord;
     }
-    
+
     public List<string> QueryWords(string prefix)
     {
+        ArgumentNullException.ThrowIfNull(prefix);
+
+        prefix = PrepareString(prefix);
+
         var current = _root;
 
         // Traverse to the end of the prefix
@@ -55,7 +70,7 @@ public class Trie : IEnumerable<string>
     {
         return Traverse(_root, "").GetEnumerator();
     }
-    
+
     private static void CollectWords(TrieNode node, string prefix, List<string> results)
     {
         if (node.IsEndOfWord)
@@ -82,5 +97,11 @@ public class Trie : IEnumerable<string>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+    private string PrepareString(string input)
+    {
+        input = input.Trim(); // Trim leading and trailing spaces
+        return _isCaseSensitive ? input : input.ToLowerInvariant(); // Normalize case if not case-sensitive
     }
 }
