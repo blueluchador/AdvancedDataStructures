@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace AdvancedDataStructures.Trie;
+namespace AdvancedDataStructures.Trees;
 
 public class Trie : IEnumerable<string>
 {

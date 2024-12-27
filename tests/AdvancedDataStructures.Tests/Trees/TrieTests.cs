@@ -1,6 +1,6 @@
-namespace AdvancedDataStructures.Tests;
+using AdvancedDataStructures.Trees;
 
-using Trie;
+namespace AdvancedDataStructures.Tests.Trees;
 
 public class TrieTests
 {
