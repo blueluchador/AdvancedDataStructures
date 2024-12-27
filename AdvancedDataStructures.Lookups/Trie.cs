@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace AdvancedDataStructures.Trees;
+namespace AdvancedDataStructures.Lookups;
 
 public class Trie : IEnumerable<string>
 {

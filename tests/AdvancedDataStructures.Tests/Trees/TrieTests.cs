@@ -1,4 +1,4 @@
-using AdvancedDataStructures.Trees;
+using AdvancedDataStructures.Lookups;
 
 namespace AdvancedDataStructures.Tests.Trees;
 
