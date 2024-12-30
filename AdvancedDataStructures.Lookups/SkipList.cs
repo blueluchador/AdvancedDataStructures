@@ -2,23 +2,34 @@
 
 namespace AdvancedDataStructures.Lookups;
 
-public class SkipList<T> : ICollection<T?>
+public class SkipList<T> : ICollection<T?> // where T : IComparable<T>, IEquatable<T> will be the constraint for the direved class
 {
     private const double Probability = 0.5;
     private static readonly Random Random = new(); 
 
-    private class Node(T? value)
+    protected class Node(T? value)
     {
-        public T? Value { get; } = value;
+        public T? Value { get; set; } = value;
         public readonly Dictionary<int, Node> Forward = new();
     }
-
-    private Node _head = new(default);
-    private int _maxLevel;
+    
     private int _count;
+
+    protected Node Head = new(default);
+    protected int MaxLevel;
     
     public int Count => _count;
-    public bool IsReadOnly { get; }
+    public bool IsReadOnly => false;
+
+    public SkipList() {}
+    
+    public SkipList(IEnumerable<T> collection)
+    {
+        foreach (var item in collection)
+        {
+            Add(item);
+        }
+    }
 
     private int RandomLevel()
     {
@@ -27,16 +38,16 @@ public class SkipList<T> : ICollection<T?>
         {
             level++;
         }
-        return Math.Min(level, _maxLevel); 
+        return Math.Min(level, MaxLevel); 
     }
 
-    public void Add(T? value)
+    public virtual void Add(T? value)
     {
-        var current = _head;
+        var current = Head;
         var update = new List<Node>();
 
         // Find the insertion point at each level
-        for (int i = _maxLevel; i >= 0; i--)
+        for (int i = MaxLevel; i >= 0; i--)
         {
             while (current.Forward.ContainsKey(i) && Comparer<T>.Default.Compare(current.Forward[i].Value, value) < 0)
             {
@@ -49,9 +60,9 @@ public class SkipList<T> : ICollection<T?>
         int level = RandomLevel();
 
         // If the new level is greater than the current max level, increase the max level
-        if (level > _maxLevel)
+        if (level > MaxLevel)
         {
-            _maxLevel = level;
+            MaxLevel = level;
         }
 
         // Create the new node
@@ -72,16 +83,16 @@ public class SkipList<T> : ICollection<T?>
 
     public void Clear()
     {
-        _head = new Node(default);
-        _maxLevel = 0;
+        Head = new Node(default);
+        MaxLevel = 0;
         _count = 0;
     }
 
     public bool Contains(T? value)
     {
-        var current = _head;
+        var current = Head;
 
-        for (int i = _maxLevel; i >= 0; i--)
+        for (int i = MaxLevel; i >= 0; i--)
         {
             while (current.Forward.ContainsKey(i) && Comparer<T>.Default.Compare(current.Forward[i].Value, value) < 0)
             {
@@ -104,7 +115,7 @@ public class SkipList<T> : ICollection<T?>
         if (array.Length - arrayIndex < _count)
             throw new ArgumentException("Destination array is not long enough.");
 
-        var current = _head.Forward.ContainsKey(0) ? _head.Forward[0] : null;
+        var current = Head.Forward.ContainsKey(0) ? Head.Forward[0] : null;
         int i = arrayIndex;
         while (current != null && i < array.Length)
         {
@@ -115,9 +126,9 @@ public class SkipList<T> : ICollection<T?>
 
     public T? Find(T value)
     {
-        var current = _head;
+        var current = Head;
 
-        for (int i = _maxLevel; i >= 0; i--)
+        for (int i = MaxLevel; i >= 0; i--)
         {
             while (current.Forward.ContainsKey(i) && Comparer<T>.Default.Compare(current.Forward[i].Value, value) < 0)
             {
@@ -146,11 +157,11 @@ public class SkipList<T> : ICollection<T?>
 
     public bool Remove(T? value)
     {
-        var current = _head;
+        var current = Head;
         var update = new List<Node>();
 
         // Find the node to be removed at each level
-        for (int i = _maxLevel; i >= 0; i--)
+        for (int i = MaxLevel; i >= 0; i--)
         {
             while (current.Forward.ContainsKey(i) && Comparer<T>.Default.Compare(current.Forward[i].Value, value) < 0)
             {
@@ -166,7 +177,7 @@ public class SkipList<T> : ICollection<T?>
         
         // Remove the node from each level
         for (int i = 0;
-             i <= _maxLevel && update[i].Forward.ContainsKey(i) && update[i].Forward[i] == current;
+             i <= MaxLevel && update[i].Forward.ContainsKey(i) && update[i].Forward[i] == current;
              i++)
         {
             update[i].Forward[i] = current.Forward[i];
@@ -176,7 +187,7 @@ public class SkipList<T> : ICollection<T?>
     
     public IEnumerator<T?> GetEnumerator()
     {
-        var current = _head.Forward.GetValueOrDefault(0); 
+        var current = Head.Forward.GetValueOrDefault(0); 
         while (current != null)
         {
             yield return current.Value;
