@@ -2,14 +2,14 @@
 
 namespace AdvancedDataStructures.Lookups;
 
-public class SkipList<T> : ICollection<T> where T : IComparable<T>, IEquatable<T>
+public class SkipList<T> : ICollection<T?>
 {
     private const double Probability = 0.5;
     private static readonly Random Random = new(); 
 
-    private class Node(T value)
+    private class Node(T? value)
     {
-        public T Value { get; } = value;
+        public T? Value { get; } = value;
         public readonly Dictionary<int, Node> Forward = new();
     }
 
@@ -30,7 +30,7 @@ public class SkipList<T> : ICollection<T> where T : IComparable<T>, IEquatable<T
         return Math.Min(level, _maxLevel); 
     }
 
-    public void Add(T value)
+    public void Add(T? value)
     {
         var current = _head;
         var update = new List<Node>();
@@ -38,7 +38,7 @@ public class SkipList<T> : ICollection<T> where T : IComparable<T>, IEquatable<T
         // Find the insertion point at each level
         for (int i = _maxLevel; i >= 0; i--)
         {
-            while (current.Forward.ContainsKey(i) && current.Forward[i].Value.CompareTo(value) < 0)
+            while (current.Forward.ContainsKey(i) && Comparer<T>.Default.Compare(current.Forward[i].Value, value) < 0)
             {
                 current = current.Forward[i];
             }
@@ -55,7 +55,7 @@ public class SkipList<T> : ICollection<T> where T : IComparable<T>, IEquatable<T
         }
 
         // Create the new node
-        var newNode = new Node(value);
+        Node newNode = new Node(value);
 
         // Connect the new node to the forward pointers of the update nodes
         for (int i = 0; i <= level; i++)
@@ -77,28 +77,28 @@ public class SkipList<T> : ICollection<T> where T : IComparable<T>, IEquatable<T
         _count = 0;
     }
 
-    public bool Contains(T value)
+    public bool Contains(T? value)
     {
         var current = _head;
 
         for (int i = _maxLevel; i >= 0; i--)
         {
-            while (current.Forward.ContainsKey(i) && current.Forward[i].Value.CompareTo(value) < 0)
+            while (current.Forward.ContainsKey(i) && Comparer<T>.Default.Compare(current.Forward[i].Value, value) < 0)
             {
                 current = current.Forward[i];
             }
         }
 
         // Move to the next node horizontally
-        current = current.Forward.ContainsKey(0) ? current.Forward[0] : null;
+        current = current.Forward.GetValueOrDefault(0);
 
-        return current != null && current.Value.Equals(value);
+        return current != null && current.Value!.Equals(value);
     }
 
-    public void CopyTo(T[] array, int arrayIndex)
+    public void CopyTo(T?[] array, int arrayIndex)
     {
-        if (array == null)
-            throw new ArgumentNullException(nameof(array));
+        ArgumentNullException.ThrowIfNull(array);
+        
         if (arrayIndex < 0 || arrayIndex >= array.Length)
             throw new ArgumentOutOfRangeException(nameof(arrayIndex));
         if (array.Length - arrayIndex < _count)
@@ -109,30 +109,30 @@ public class SkipList<T> : ICollection<T> where T : IComparable<T>, IEquatable<T
         while (current != null && i < array.Length)
         {
             array[i++] = current.Value;
-            current = current.Forward.ContainsKey(0) ? current.Forward[0] : null;
+            current = current.Forward.GetValueOrDefault(0);
         }
     }
 
-    public T Find(T value)
+    public T? Find(T value)
     {
         var current = _head;
 
         for (int i = _maxLevel; i >= 0; i--)
         {
-            while (current.Forward.ContainsKey(i) && current.Forward[i].Value.CompareTo(value) < 0)
+            while (current.Forward.ContainsKey(i) && Comparer<T>.Default.Compare(current.Forward[i].Value, value) < 0)
             {
                 current = current.Forward[i];
             }
         }
 
         // Move to the next node horizontally
-        current = current.Forward.ContainsKey(0) ? current.Forward[0] : null;
+        current = current.Forward.GetValueOrDefault(0);
         
         if (current == null) throw new KeyNotFoundException();
         return current.Value;
     }
 
-    public T FindOrDefault(T value, T defaultValue = default)
+    public T? FindOrDefault(T value, T? defaultValue = default)
     {
         try
         {
@@ -144,7 +144,7 @@ public class SkipList<T> : ICollection<T> where T : IComparable<T>, IEquatable<T
         }
     }
 
-    public bool Remove(T value)
+    public bool Remove(T? value)
     {
         var current = _head;
         var update = new List<Node>();
@@ -152,7 +152,7 @@ public class SkipList<T> : ICollection<T> where T : IComparable<T>, IEquatable<T
         // Find the node to be removed at each level
         for (int i = _maxLevel; i >= 0; i--)
         {
-            while (current.Forward.ContainsKey(i) && current.Forward[i].Value.CompareTo(value) < 0)
+            while (current.Forward.ContainsKey(i) && Comparer<T>.Default.Compare(current.Forward[i].Value, value) < 0)
             {
                 current = current.Forward[i];
             }
@@ -160,9 +160,9 @@ public class SkipList<T> : ICollection<T> where T : IComparable<T>, IEquatable<T
         }
 
         // Find the node to be removed
-        current = current.Forward.ContainsKey(0) ? current.Forward[0] : null;
+        current = current.Forward.GetValueOrDefault(0);
 
-        if (current == null || !current.Value.Equals(value)) return false;
+        if (current == null || !current.Value!.Equals(value)) return false;
         
         // Remove the node from each level
         for (int i = 0;
@@ -174,7 +174,7 @@ public class SkipList<T> : ICollection<T> where T : IComparable<T>, IEquatable<T
         return true;
     }
     
-    public IEnumerator<T> GetEnumerator()
+    public IEnumerator<T?> GetEnumerator()
     {
         var current = _head.Forward.GetValueOrDefault(0); 
         while (current != null)
