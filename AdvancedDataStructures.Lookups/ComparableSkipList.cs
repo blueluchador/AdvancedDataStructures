@@ -4,8 +4,10 @@ namespace AdvancedDataStructures.Lookups;
 
 public class ComparableSkipList<T> : SkipList<T> where T : IComparable<T>, IEquatable<T>
 {
-    public override void Add(T? value)
+    public override void Add(T value)
     {
+        ArgumentNullException.ThrowIfNull(value);
+        
         if (Contains(value))
         {
             throw new InvalidOperationException("Duplicate values are not allowed in ComparableSkipList.");
@@ -16,6 +18,8 @@ public class ComparableSkipList<T> : SkipList<T> where T : IComparable<T>, IEqua
     
     public bool Update(T newValue)
     {
+        ArgumentNullException.ThrowIfNull(newValue);
+        
         // Start from the head node
         var current = Head;
         bool found = false;
@@ -23,7 +27,7 @@ public class ComparableSkipList<T> : SkipList<T> where T : IComparable<T>, IEqua
         // Traverse the skip list to find the first node to replace
         for (int i = MaxLevel; i >= 0; i--)
         {
-            while (current.Forward.ContainsKey(i) && current.Forward[i].Value!.CompareTo(newValue) < 0)
+            while (current.Forward.ContainsKey(i) && current.Forward[i].Value.CompareTo(newValue) < 0)
             {
                 current = current.Forward[i];
             }
@@ -33,7 +37,7 @@ public class ComparableSkipList<T> : SkipList<T> where T : IComparable<T>, IEqua
         current = current.Forward.GetValueOrDefault(0);
 
         // Update all matching nodes
-        while (current != null && current.Value!.Equals(newValue))
+        while (current != null && current.Value.Equals(newValue))
         {
             current.Value = newValue;
             found = true;

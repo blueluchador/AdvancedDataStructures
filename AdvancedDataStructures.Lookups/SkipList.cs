@@ -2,22 +2,23 @@
 
 namespace AdvancedDataStructures.Lookups;
 
-public class SkipList<T> : ICollection<T?> // where T : IComparable<T>, IEquatable<T> will be the constraint for the direved class
+public class SkipList<T> : ICollection<T>
 {
     private const double Probability = 0.5;
     private static readonly Random Random = new(); 
 
-    protected class Node(T? value)
+    protected class Node(T value)
     {
-        public T? Value { get; set; } = value;
+        public T Value { get; set; } = value;
         public readonly Dictionary<int, Node> Forward = new();
     }
     
     private int _count;
 
-    protected Node Head = new(default);
+    protected Node Head = new(default!);
     protected int MaxLevel;
     
+    // ReSharper disable once ConvertToAutoPropertyWithPrivateSetter
     public int Count => _count;
     public bool IsReadOnly => false;
 
@@ -25,8 +26,11 @@ public class SkipList<T> : ICollection<T?> // where T : IComparable<T>, IEquatab
     
     public SkipList(IEnumerable<T> collection)
     {
+        ArgumentNullException.ThrowIfNull(collection);
+        
         foreach (var item in collection)
         {
+            // ReSharper disable once VirtualMemberCallInConstructor
             Add(item);
         }
     }
@@ -41,8 +45,10 @@ public class SkipList<T> : ICollection<T?> // where T : IComparable<T>, IEquatab
         return Math.Min(level, MaxLevel); 
     }
 
-    public virtual void Add(T? value)
+    public virtual void Add(T value)
     {
+        ArgumentNullException.ThrowIfNull(value);
+        
         var current = Head;
         var update = new List<Node>();
 
@@ -83,13 +89,15 @@ public class SkipList<T> : ICollection<T?> // where T : IComparable<T>, IEquatab
 
     public void Clear()
     {
-        Head = new Node(default);
+        Head = new Node(default!);
         MaxLevel = 0;
         _count = 0;
     }
 
-    public bool Contains(T? value)
+    public bool Contains(T value)
     {
+        ArgumentNullException.ThrowIfNull(value);
+        
         var current = Head;
 
         for (int i = MaxLevel; i >= 0; i--)
@@ -106,7 +114,7 @@ public class SkipList<T> : ICollection<T?> // where T : IComparable<T>, IEquatab
         return current != null && current.Value!.Equals(value);
     }
 
-    public void CopyTo(T?[] array, int arrayIndex)
+    public void CopyTo(T[] array, int arrayIndex)
     {
         ArgumentNullException.ThrowIfNull(array);
         
@@ -115,7 +123,7 @@ public class SkipList<T> : ICollection<T?> // where T : IComparable<T>, IEquatab
         if (array.Length - arrayIndex < _count)
             throw new ArgumentException("Destination array is not long enough.");
 
-        var current = Head.Forward.ContainsKey(0) ? Head.Forward[0] : null;
+        var current = Head.Forward.GetValueOrDefault(0);
         int i = arrayIndex;
         while (current != null && i < array.Length)
         {
@@ -124,8 +132,10 @@ public class SkipList<T> : ICollection<T?> // where T : IComparable<T>, IEquatab
         }
     }
 
-    public T? Find(T value)
+    public T Find(T value)
     {
+        ArgumentNullException.ThrowIfNull(value);
+        
         var current = Head;
 
         for (int i = MaxLevel; i >= 0; i--)
@@ -143,8 +153,10 @@ public class SkipList<T> : ICollection<T?> // where T : IComparable<T>, IEquatab
         return current.Value;
     }
 
-    public T? FindOrDefault(T value, T? defaultValue = default)
+    public T FindOrDefault(T value, T defaultValue = default!)
     {
+        ArgumentNullException.ThrowIfNull(value);
+        
         try
         {
             return Find(value);
@@ -155,8 +167,10 @@ public class SkipList<T> : ICollection<T?> // where T : IComparable<T>, IEquatab
         }
     }
 
-    public bool Remove(T? value)
+    public bool Remove(T value)
     {
+        ArgumentNullException.ThrowIfNull(value);
+        
         var current = Head;
         var update = new List<Node>();
 
@@ -182,10 +196,11 @@ public class SkipList<T> : ICollection<T?> // where T : IComparable<T>, IEquatab
         {
             update[i].Forward[i] = current.Forward[i];
         }
+        
         return true;
     }
     
-    public IEnumerator<T?> GetEnumerator()
+    public IEnumerator<T> GetEnumerator()
     {
         var current = Head.Forward.GetValueOrDefault(0); 
         while (current != null)
