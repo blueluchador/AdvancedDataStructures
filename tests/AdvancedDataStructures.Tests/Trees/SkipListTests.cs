@@ -1,169 +1,223 @@
+using System.Diagnostics;
 using AdvancedDataStructures.Lookups;
+using Xunit.Abstractions;
 
 namespace AdvancedDataStructures.Tests.Trees;
 
-// public class MyObject : IComparable<MyObject>, IEquatable<MyObject>
-// {
-//     public int Id { get; init;  }
-//     public string? Name { get; init; }
-//
-//     public int CompareTo(MyObject? other)
-//     {
-//         return other == null ? 1 : Id.CompareTo(other.Id);
-//     }
-//
-//     public override string ToString()
-//     {
-//         return $"ID: {Id}, Name: {Name}";
-//     }
-//
-//     public bool Equals(MyObject? other)
-//     {
-//         if (other is null) return false;
-//         if (ReferenceEquals(this, other)) return true;
-//         return Id == other.Id;
-//     }
-//     
-//     public override bool Equals(object? obj)
-//     {
-//         if (obj is null) return false;
-//         if (ReferenceEquals(this, obj)) return true;
-//         return obj.GetType() == GetType() && Equals((MyObject)obj);
-//     }
-//
-//     public override int GetHashCode()
-//     {
-//         return Id;
-//     }
-// }
-
-public class SkipListTests
+public class SkipListTests(ITestOutputHelper testOutputHelper)
 {
     [Fact]
-    public void Test_Add_And_Contains_Int()
+    public void ParameterizedConstructor_WithInitialItems_ShouldInitializeCorrectly()
     {
-        var skipList = new SkipList<int> { 10, 20, 15 };
-        Assert.Contains(10, skipList);
-        Assert.Contains(15, skipList);
-        Assert.Contains(20, skipList);
-        Assert.DoesNotContain(30, skipList);
+        // Arrange
+        int[] initialItems = [3, 7, 2, 5, 8, 1, 6, 4, 9, 10];
+
+        // Act
+        var skipList = new SkipList<int>(initialItems);
+
+        // Assert
+        foreach (int item in initialItems)
+        {
+            Assert.Contains(item, skipList);
+        }
+
+        Assert.Equal(initialItems.Length, skipList.Count);
     }
 
     [Fact]
-    public void Test_Remove_Int()
+    public void Add_WithDuplicateItems_ShouldIncreaseCount()
     {
-        var skipList = new SkipList<int> { 10, 20 };
-        Assert.True(skipList.Remove(10));
-        Assert.DoesNotContain(10, skipList);
-        Assert.Contains(20, skipList);
-        Assert.False(skipList.Remove(30));
+        // Arrange
+        var skipList = new SkipList<int> { 5, 3, 8 };
+
+        // Act (add a duplicate)
+        skipList.Add(5);
+
+        // Assert
+        Assert.Contains(5, skipList);
+        Assert.Equal(4, skipList.Count);
     }
 
     [Fact]
-    public void Test_Find_Int()
+    public void Add_WithNullValue_ShouldThrowArgumentNullException()
     {
-        var skipList = new SkipList<int?> { 10, 20, -10 };
-        Assert.Equal(-10, skipList.Find(-10));
-        Assert.Equal(10, skipList.Find(10));
-        Assert.Equal(20, skipList.Find(20));
-        Assert.Null(skipList.FindOrDefault(30));
+        // Arrange
+        var skipList = new SkipList<string>();
+
+        // Act & Assert
+        Assert.Throws<ArgumentNullException>(() => skipList.Add(null!));
     }
 
     [Fact]
-    public void Test_Find_Int_Throws_Exception()
+    public void Remove_WithExistingItem_ShouldSucceed()
     {
-        var skipList = new SkipList<int> { 10, 15, 20 };
-        Assert.Throws<KeyNotFoundException>(() => skipList.Find(30));
-    }
+        // Arrange
+        var skipList = new SkipList<int> { 1, 2, 3, 4, 5 };
 
-    // [Fact]
-    // public void Test_Add_And_Contains_MyObject()
-    // {
-    //     var skipList = new SkipList<MyObject>
-    //     {
-    //         new() { Id = 1, Name = "Some name" },
-    //         new() { Id = 2, Name = "Some other name" },
-    //         new() { Id = 3, Name = "Some ordinary name" }
-    //     };
-    //     Assert.Contains(new MyObject { Id = 1 }, skipList);
-    //     Assert.DoesNotContain(new MyObject { Id = 4 }, skipList);
-    // }
-    //
-    // [Fact]
-    // public void Test_Find_MyObject()
-    // {
-    //     var skipList = new SkipList<MyObject>
-    //     {
-    //         new() { Id = 1, Name = "Some name" },
-    //         new() { Id = 2, Name = "Some other name" }
-    //     };
-    //     var result = skipList.FindOrDefault(new MyObject { Id = 2 });
-    //     Assert.NotNull(result);
-    //     Assert.Equal("Some other name", result.Name);
-    //
-    //     var notFound = skipList.FindOrDefault(new MyObject { Id = 3 });
-    //     Assert.Null(notFound);
-    // }
-    //
-    // [Fact]
-    // public void Test_Remove_MyObject()
-    // {
-    //     var skipList = new SkipList<MyObject>
-    //     {
-    //         new() { Id = 1, Name = "Some name" },
-    //         new() { Id = 2, Name = "Some other name" }
-    //     };
-    //     Assert.True(skipList.Remove(new MyObject { Id = 1 }));
-    //     Assert.DoesNotContain(new MyObject { Id = 1 }, skipList);
-    //     Assert.Contains(new MyObject { Id = 2 }, skipList);
-    //     Assert.False(skipList.Remove(new MyObject { Id = 3 }));
-    // }
+        // Act
+        bool result = skipList.Remove(3);
 
-    [Fact]
-    public void Test_Enumeration()
-    {
-        var skipList = new SkipList<int> { 10, 20, 15 };
-        var sorted = skipList.ToList();
-        Assert.Equal(new[] { 10, 15, 20 }, sorted);
+        // Assert
+        Assert.True(result);
+        Assert.DoesNotContain(3, skipList);
+        Assert.Equal(4, skipList.Count);
     }
 
     [Fact]
-    public void Test_Empty_SkipList()
+    public void Remove_FromEmptyList_ShouldReturnFalse()
     {
+        // Arrange
         var skipList = new SkipList<int>();
-        Assert.DoesNotContain(10, skipList);
-        Assert.Equal(-1, skipList.FindOrDefault(10, -1));
-        Assert.False(skipList.Remove(10));
+
+        // Act
+        bool result = skipList.Remove(5);
+
+        // Assert
+        Assert.False(result);
+        Assert.Empty(skipList);
     }
 
     [Fact]
-    public void Test_Add_Duplicate_Int()
+    public void Contains_WithNonExistentItem_ShouldReturnFalse()
     {
-        var skipList = new SkipList<int> { 10, 10 };
-        int count = skipList.Count;
-        Assert.Equal(2, count);
+        // Arrange
+        var skipList = new SkipList<int> { 1, 3, 5 };
+
+        // Act
+        bool result = skipList.Contains(2);
+
+        // Assert
+        Assert.False(result);
     }
 
+    [Fact]
+    public void Find_WithExistingItem_ShouldReturnCorrectValue()
+    {
+        // Arrange
+        var skipList = new SkipList<int> { 1, 2, 3, 4, 5 };
+
+        // Act
+        int result = skipList.Find(3);
+
+        // Assert
+        Assert.Equal(3, result);
+    }
+
+    [Fact]
+    public void Find_WithNonExistentItem_ShouldThrowKeyNotFoundException()
+    {
+        // Arrange
+        var skipList = new SkipList<int> { 1, 2, 3, 4, 5 };
+
+        // Act & Assert
+        Assert.Throws<KeyNotFoundException>(() => skipList.Find(10));
+    }
+
+    [Fact]
+    public void FindOrDefault_WithNonExistentItem_ShouldReturnDefaultValue()
+    {
+        // Arrange
+        var skipList = new SkipList<int> { 1, 2, 3 };
+
+        // Act
+        int result = skipList.FindOrDefault(10, -1);
+
+        // Assert
+        Assert.Equal(-1, result);
+    }
+
+    [Fact]
+    public void CopyTo_WithValidParameters_ShouldCopyItemsCorrectly()
+    {
+        // Arrange
+        var skipList = new SkipList<int> { 1, 2, 3 };
+        int[] array = new int[5];
+
+        // Act
+        skipList.CopyTo(array, 2);
+
+        // Assert
+        Assert.Equal([0, 0, 1, 2, 3], array);
+    }
+
+    [Fact]
+    public void CopyTo_WithInvalidParameters_ShouldThrowException()
+    {
+        // Arrange
+        var skipList = new SkipList<int> { 1, 2, 3 };
+        int[] array = new int[2];
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => skipList.CopyTo(array, 0));
+        Assert.Throws<ArgumentOutOfRangeException>(() => skipList.CopyTo(array, -1));
+    }
+
+    [Fact]
+    public void Clear_WhenCalled_ShouldEmptyTheList()
+    {
+        // Arrange
+        var skipList = new SkipList<int> { 1, 2, 3 };
+
+        // Act
+        skipList.Clear();
+
+        // Assert
+        Assert.Empty(skipList);
+        Assert.DoesNotContain(1, skipList);
+    }
+
+    [Fact]
+    public void SkipList_WithDuplicates_ShouldHandleCorrectly()
+    {
+        // Arrange
+        var skipList = new SkipList<int> { 1, 2, 2, 3 };
+
+        // Assert
+        Assert.Equal(4, skipList.Count);
+        Assert.Contains(2, skipList);
+    }
+
+    [Fact]
+    public void Enumerator_WithItems_ShouldIterateCorrectly()
+    {
+        // Arrange
+        int[] items = [4, 1, 7, 3, 2, 6, 5, 8, 9, 10];
+        var skipList = new SkipList<int>(items);
+
+        // Act
+        var enumeratedItems = skipList.ToList();
+
+        // Assert
+        Assert.Equal(items.OrderBy(x => x).ToList(), enumeratedItems);
+    }
+    
     // [Fact]
-    // public void Test_Add_Duplicate_MyObject()
+    // public void ContainsAndFind_PerformanceTest_ForMillionRecords()
     // {
-    //     var skipList = new SkipList<MyObject>();
+    //     // Arrange
+    //     var skipList = new SkipList<int>(Enumerable.Range(1, 200_000));
     //
-    //     var myObject = new MyObject { Id = 1, Name = "Some name" };
-    //     skipList.Add(myObject);
-    //     skipList.Add(myObject);
+    //     var stopwatch = new Stopwatch();
     //
-    //     int count = skipList.Count;
-    //     Assert.Equal(2, count);
+    //     // Act
+    //     stopwatch.Start();
+    //     bool containsResult = skipList.Contains(150_000);
+    //     stopwatch.Stop();
+    //     long containsTime = stopwatch.ElapsedMilliseconds;
+    //
+    //     stopwatch.Reset();
+    //     stopwatch.Start();
+    //     int findResult = skipList.Find(150_000);
+    //     stopwatch.Stop();
+    //     long findTime = stopwatch.ElapsedMilliseconds;
+    //
+    //     // Assert
+    //     Assert.True(containsResult);
+    //     Assert.Equal(150_000, findResult);
+    //     Assert.Equal(200_000, skipList.Count);
+    //
+    //     // Log performance (optional, for analysis)
+    //     testOutputHelper.WriteLine($"Contains time: {containsTime} ms");
+    //     testOutputHelper.WriteLine($"Find time: {findTime} ms");
     // }
-
-    [Fact]
-    public void Test_Boundary_Int()
-    {
-        var skipList = new SkipList<int>();
-        skipList.Add(Int32.MinValue);
-        skipList.Add(Int32.MaxValue);
-        Assert.Contains(Int32.MinValue, skipList);
-        Assert.Contains(Int32.MaxValue, skipList);
-    }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Concurrent;
 
 namespace AdvancedDataStructures.Lookups;
 
@@ -21,18 +22,61 @@ public class SkipList<T> : ICollection<T>
     // ReSharper disable once ConvertToAutoPropertyWithPrivateSetter
     public int Count => _count;
     public bool IsReadOnly => false;
+    
+    private readonly object _lock = new();
 
     public SkipList() {}
     
     public SkipList(IEnumerable<T> collection)
     {
         ArgumentNullException.ThrowIfNull(collection);
-        
-        foreach (var item in collection)
+    
+        var items = collection.AsParallel().OrderBy(x => x).ToList();
+        items.Sort();
+    
+        BulkAdd(items);
+    }
+    // public SkipList(IEnumerable<T> collection)
+    // {
+    //     const int maxBatchSize = 10_000;
+    //     
+    //     ArgumentNullException.ThrowIfNull(collection);
+    //
+    //     // Sort the collection and convert it to a list
+    //     var items = collection.AsParallel().OrderBy(x => x).ToList();
+    //
+    //     int totalItems = items.Count;
+    //     int calculatedBatchSize = (int)Math.Ceiling((double)totalItems / Environment.ProcessorCount);
+    //
+    //     // Ensure batch size does not exceed the maximum allowed size
+    //     int batchSize = Math.Min(calculatedBatchSize, maxBatchSize);
+    //
+    //     // Determine chunk size
+    //     int chunkSize = batchSize * Environment.ProcessorCount;
+    //
+    //     // Process in chunks
+    //     for (int i = 0; i < totalItems; i += chunkSize)
+    //     {
+    //         int end = Math.Min(i + chunkSize, totalItems);
+    //         BulkAdd(items, i, end);
+    //     }
+    // }
+    
+    private void BulkAdd(List<T> items)
+    {
+        int count = items.Count;
+        int batchSize = (int)Math.Ceiling((double)count / Environment.ProcessorCount);
+        if (batchSize > 10_000) batchSize = 10_000;
+    
+        var partitioner = Partitioner.Create(0, count, batchSize);
+    
+        Parallel.ForEach(partitioner, range =>
         {
-            // ReSharper disable once VirtualMemberCallInConstructor
-            Add(item);
-        }
+            for (int i = range.Item1; i < range.Item2; i++)
+            {
+                Add(items[i]);
+            }
+        });
     }
 
     private int RandomLevel()
@@ -48,43 +92,46 @@ public class SkipList<T> : ICollection<T>
     public virtual void Add(T value)
     {
         ArgumentNullException.ThrowIfNull(value);
-        
-        var current = Head;
-        var update = new List<Node>();
 
+        var update = new Node[MaxLevel + 1];
+        var current = Head;
+        
         // Find the insertion point at each level
         for (int i = MaxLevel; i >= 0; i--)
         {
-            while (current.Forward.ContainsKey(i) && Comparer<T>.Default.Compare(current.Forward[i].Value, value) < 0)
+            while (current.Forward.TryGetValue(i, out var next) && Comparer<T>.Default.Compare(next.Value, value) < 0)
             {
-                current = current.Forward[i];
+                current = next;
             }
-            update.Add(current); 
+            update[i] = current;
         }
-
+        
         // Generate a random level for the new node
         int level = RandomLevel();
 
-        // If the new level is greater than the current max level, increase the max level
-        if (level > MaxLevel)
+        lock (_lock)
         {
-            MaxLevel = level;
-        }
-
-        // Create the new node
-        Node newNode = new Node(value);
-
-        // Connect the new node to the forward pointers of the update nodes
-        for (int i = 0; i <= level; i++)
-        {
-            if (update[i].Forward.ContainsKey(i))
+            if (level > MaxLevel)
             {
-                newNode.Forward[i] = update[i].Forward[i];
+                for (int i = MaxLevel + 1; i <= level; i++)
+                {
+                    update[i] = Head;
+                }
+                MaxLevel = level;
             }
-            update[i].Forward[i] = newNode;
+            
+            var newNode = new Node(value);
+            for (int i = 0; i <= level; i++)
+            {
+                if (update[i].Forward.TryGetValue(i, out var next))
+                {
+                    newNode.Forward[i] = next;
+                }
+                update[i].Forward[i] = newNode;
+            }
+            
+            _count++;
         }
-
-        _count++;
     }
 
     public void Clear()
@@ -171,8 +218,10 @@ public class SkipList<T> : ICollection<T>
     {
         ArgumentNullException.ThrowIfNull(value);
         
+        if (_count == 0) return false;
+    
         var current = Head;
-        var update = new List<Node>();
+        var update = new Node[MaxLevel + 1]; // Create an array with a size of MaxLevel + 1
 
         // Find the node to be removed at each level
         for (int i = MaxLevel; i >= 0; i--)
@@ -181,22 +230,30 @@ public class SkipList<T> : ICollection<T>
             {
                 current = current.Forward[i];
             }
-            update.Add(current);
+            update[i] = current; // Track the node at this level
         }
 
         // Find the node to be removed
         current = current.Forward.GetValueOrDefault(0);
 
         if (current == null || !current.Value!.Equals(value)) return false;
-        
+
         // Remove the node from each level
-        for (int i = 0;
-             i <= MaxLevel && update[i].Forward.ContainsKey(i) && update[i].Forward[i] == current;
-             i++)
+        for (int i = 0; i <= MaxLevel; i++)
         {
-            update[i].Forward[i] = current.Forward[i];
+            if (update[i].Forward.ContainsKey(i) && update[i].Forward[i] == current)
+            {
+                update[i].Forward[i] = current.Forward.GetValueOrDefault(i)!;
+            }
         }
-        
+
+        // Decrease MaxLevel if the highest level is empty
+        while (MaxLevel > 0 && Head.Forward.GetValueOrDefault(MaxLevel) == null)
+        {
+            MaxLevel--;
+        }
+
+        _count--;
         return true;
     }
     
