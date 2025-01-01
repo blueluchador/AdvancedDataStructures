@@ -1,3 +1,5 @@
+using AdvancedDataStructures.Lookups.SkipLists;
+
 namespace AdvancedDataStructures.Tests.Lookups.SkipLists;
 
 public class ComparableSkipListTests
@@ -5,42 +7,222 @@ public class ComparableSkipListTests
     private class MyObject : IComparable<MyObject>, IEquatable<MyObject>
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; init; }
 
-        public int CompareTo(MyObject other)
-        {
-            if (other == null)
-                return 1;
+        public int CompareTo(MyObject? other) => other == null ? 1 : Id.CompareTo(other.Id);
 
-            return Id.CompareTo(other.Id);
-        }
+        public bool Equals(MyObject? other) => other != null && Id == other.Id;
 
-        public bool Equals(MyObject other)
-        {
-            if (other == null)
-                return false;
+        public override bool Equals(object? obj) => obj is MyObject otherEntity && Equals(otherEntity);
 
-            return Id == other.Id;
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
-        public override bool Equals(object obj)
-        {
-            if (obj is MyObject otherEntity)
-            {
-                return Equals(otherEntity);
-            }
+        public override string ToString() => $"Id: {Id}, Name: {Name}";
+    }
 
-            return false;
-        }
+    [Fact]
+    public void Add_ValidUniqueValue_ShouldAddSuccessfully()
+    {
+        // Arrange
+        var skipList = new ComparableSkipList<MyObject>();
+        var obj = new MyObject { Id = 1, Name = "Object1" };
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        // Act
+        skipList.Add(obj);
 
-        public override string ToString()
-        {
-            return $"Id: {Id}, Name: {Name}";
-        }
+        // Assert
+        Assert.True(skipList.Contains(obj), "The object was not added to the skip list.");
+    }
+
+    [Fact]
+    public void Add_DuplicateValue_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var skipList = new ComparableSkipList<MyObject>();
+        var obj = new MyObject { Id = 1, Name = "Object1" };
+        skipList.Add(obj);
+
+        // Act & Assert
+        var exception = Assert.Throws<InvalidOperationException>(() => skipList.Add(obj));
+        Assert.Equal("Duplicate values are not allowed in ComparableSkipList.", exception.Message);
+    }
+
+    [Fact]
+    public void Add_NullValue_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        var skipList = new ComparableSkipList<MyObject>();
+
+        // Act & Assert
+        Assert.Throws<ArgumentNullException>(() => skipList.Add(null!));
+    }
+
+    [Fact]
+    public void Update_ExistingValue_ShouldUpdateSuccessfully()
+    {
+        // Arrange
+        var skipList = new ComparableSkipList<MyObject>();
+        var oldObj = new MyObject { Id = 1, Name = "OldObject" };
+        var updatedObj = new MyObject { Id = 1, Name = "UpdatedObject" };
+        skipList.Add(oldObj);
+
+        // Act
+        bool result = skipList.Update(updatedObj);
+
+        // Assert
+        Assert.True(result, "The update operation failed for an existing value.");
+        Assert.True(skipList.Contains(updatedObj), "The updated object was not found in the skip list.");
+    }
+
+    [Fact]
+    public void Update_NonExistingValue_ShouldReturnFalse()
+    {
+        // Arrange
+        var skipList = new ComparableSkipList<MyObject>();
+        var obj = new MyObject { Id = 1, Name = "NonExistingObject" };
+
+        // Act
+        bool result = skipList.Update(obj);
+
+        // Assert
+        Assert.False(result, "Update returned true for a non-existing value.");
+    }
+
+    [Fact]
+    public void Remove_ExistingValue_ShouldRemoveSuccessfully()
+    {
+        // Arrange
+        var skipList = new ComparableSkipList<MyObject>();
+        var obj = new MyObject { Id = 1, Name = "ObjectToRemove" };
+        skipList.Add(obj);
+
+        // Act
+        bool result = skipList.Remove(new MyObject { Id = 1 });
+
+        // Assert
+        Assert.True(result, "The value was not removed from the skip list.");
+        Assert.False(skipList.Contains(obj), "The removed value is still in the skip list.");
+    }
+
+    [Fact]
+    public void Remove_NonExistingValue_ShouldReturnFalse()
+    {
+        // Arrange
+        var skipList = new ComparableSkipList<MyObject>();
+        var obj = new MyObject { Id = 1, Name = "NonExistingObject" };
+
+        // Act
+        bool result = skipList.Remove(obj);
+
+        // Assert
+        Assert.False(result, "Remove returned true for a non-existing value.");
+    }
+
+    [Fact]
+    public void Remove_NullValue_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        var skipList = new ComparableSkipList<MyObject>();
+
+        // Act & Assert
+        Assert.Throws<ArgumentNullException>(() => skipList.Remove(null!));
+    }
+
+    [Fact]
+    public void Contains_ExistingValue_ShouldReturnTrue()
+    {
+        // Arrange
+        var skipList = new ComparableSkipList<MyObject>();
+        var obj = new MyObject { Id = 1, Name = "ExistingObject" };
+        skipList.Add(obj);
+
+        // Act
+        bool result = skipList.Contains(obj);
+
+        // Assert
+        Assert.True(result, "Contains returned false for an existing value.");
+    }
+
+    [Fact]
+    public void Contains_NonExistingValue_ShouldReturnFalse()
+    {
+        // Arrange
+        var skipList = new ComparableSkipList<MyObject>();
+        var obj = new MyObject { Id = 1, Name = "NonExistingObject" };
+
+        // Act
+        bool result = skipList.Contains(obj);
+
+        // Assert
+        Assert.False(result, "Contains returned true for a value not in the skip list.");
+    }
+
+    [Fact]
+    public void Count_EmptyList_ShouldBeZero()
+    {
+        // Arrange
+        var skipList = new ComparableSkipList<MyObject>();
+
+        // Act
+        int count = skipList.Count;
+
+        // Assert
+        Assert.Equal(0, count);
+    }
+
+    [Fact]
+    public void Count_NonEmptyList_ShouldReturnCorrectCount()
+    {
+        // Arrange
+        var skipList = new ComparableSkipList<MyObject>();
+        skipList.Add(new MyObject { Id = 1, Name = "Object1" });
+        skipList.Add(new MyObject { Id = 2, Name = "Object2" });
+
+        // Act
+        var count = skipList.Count;
+
+        // Assert
+        Assert.Equal(2, count);
+    }
+
+    [Fact]
+    public void Add_ValuesOutOfOrder_ShouldMaintainSortedOrder()
+    {
+        // Arrange
+        var skipList = new ComparableSkipList<MyObject>();
+        var obj1 = new MyObject { Id = 3, Name = "Object3" };
+        var obj2 = new MyObject { Id = 1, Name = "Object1" };
+        var obj3 = new MyObject { Id = 2, Name = "Object2" };
+    
+        // Act
+        skipList.Add(obj1);
+        skipList.Add(obj2);
+        skipList.Add(obj3);
+        var allValues = skipList.ToList();
+        
+        // Assert
+        Assert.Collection(allValues,
+            item => Assert.Equal(obj2, item),
+            item => Assert.Equal(obj3, item),
+            item => Assert.Equal(obj1, item)
+        );
+    }
+
+    [Fact]
+    public void AddAndRemove_MultipleOperations_ShouldWorkAsExpected()
+    {
+        // Arrange
+        var skipList = new ComparableSkipList<MyObject>();
+        var obj1 = new MyObject { Id = 1, Name = "Object1" };
+        var obj2 = new MyObject { Id = 2, Name = "Object2" };
+
+        // Act
+        skipList.Add(obj1);
+        skipList.Add(obj2);
+        skipList.Remove(obj1);
+
+        // Assert
+        Assert.False(skipList.Contains(obj1), "Removed object was still found in the skip list.");
+        Assert.True(skipList.Contains(obj2), "Valid object was not found in the skip list.");
     }
 }

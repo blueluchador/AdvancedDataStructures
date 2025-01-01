@@ -254,6 +254,7 @@ public class SkipList<T> : ICollection<T>
         }
 
         _count--;
+        if (_count == 0) Clear(); // Ensure the skip list is reset
         return true;
     }
     
