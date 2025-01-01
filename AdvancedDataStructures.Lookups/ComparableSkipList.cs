@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace AdvancedDataStructures.Lookups;
 
 public class ComparableSkipList<T> : SkipList<T> where T : IComparable<T>, IEquatable<T>
