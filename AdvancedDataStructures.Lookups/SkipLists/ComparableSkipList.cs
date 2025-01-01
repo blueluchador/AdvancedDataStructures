@@ -1,4 +1,4 @@
-namespace AdvancedDataStructures.Lookups;
+namespace AdvancedDataStructures.Lookups.SkipLists;
 
 public class ComparableSkipList<T> : SkipList<T> where T : IComparable<T>, IEquatable<T>
 {

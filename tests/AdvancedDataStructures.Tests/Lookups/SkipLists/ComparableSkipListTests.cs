@@ -1,4 +1,4 @@
-namespace AdvancedDataStructures.Tests.Trees;
+namespace AdvancedDataStructures.Tests.Lookups.SkipLists;
 
 public class ComparableSkipListTests
 {

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
 
-namespace AdvancedDataStructures.Lookups;
+namespace AdvancedDataStructures.Lookups.SkipLists;
 
 public class SkipList<T> : ICollection<T>
 {

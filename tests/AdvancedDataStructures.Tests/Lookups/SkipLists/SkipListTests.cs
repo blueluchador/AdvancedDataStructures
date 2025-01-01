@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using AdvancedDataStructures.Lookups;
+using AdvancedDataStructures.Lookups.SkipLists;
 using Xunit.Abstractions;
 
-namespace AdvancedDataStructures.Tests.Trees;
+namespace AdvancedDataStructures.Tests.Lookups.SkipLists;
 
 public class SkipListTests(ITestOutputHelper testOutputHelper)
 {
@@ -191,33 +191,33 @@ public class SkipListTests(ITestOutputHelper testOutputHelper)
         Assert.Equal(items.OrderBy(x => x).ToList(), enumeratedItems);
     }
     
-    // [Fact]
-    // public void ContainsAndFind_PerformanceTest_ForMillionRecords()
-    // {
-    //     // Arrange
-    //     var skipList = new SkipList<int>(Enumerable.Range(1, 200_000));
-    //
-    //     var stopwatch = new Stopwatch();
-    //
-    //     // Act
-    //     stopwatch.Start();
-    //     bool containsResult = skipList.Contains(150_000);
-    //     stopwatch.Stop();
-    //     long containsTime = stopwatch.ElapsedMilliseconds;
-    //
-    //     stopwatch.Reset();
-    //     stopwatch.Start();
-    //     int findResult = skipList.Find(150_000);
-    //     stopwatch.Stop();
-    //     long findTime = stopwatch.ElapsedMilliseconds;
-    //
-    //     // Assert
-    //     Assert.True(containsResult);
-    //     Assert.Equal(150_000, findResult);
-    //     Assert.Equal(200_000, skipList.Count);
-    //
-    //     // Log performance (optional, for analysis)
-    //     testOutputHelper.WriteLine($"Contains time: {containsTime} ms");
-    //     testOutputHelper.WriteLine($"Find time: {findTime} ms");
-    // }
+    [Fact(Skip = "Sharded skip list not implemented yet")]
+    public void ContainsAndFind_PerformanceTest_ForMillionRecords()
+    {
+        // Arrange
+        var skipList = new SkipList<int>(Enumerable.Range(1, 1_000_000));
+    
+        var stopwatch = new Stopwatch();
+    
+        // Act
+        stopwatch.Start();
+        bool containsResult = skipList.Contains(500_000);
+        stopwatch.Stop();
+        long containsTime = stopwatch.ElapsedMilliseconds;
+    
+        stopwatch.Reset();
+        stopwatch.Start();
+        int findResult = skipList.Find(500_000);
+        stopwatch.Stop();
+        long findTime = stopwatch.ElapsedMilliseconds;
+    
+        // Assert
+        Assert.True(containsResult);
+        Assert.Equal(500_000, findResult);
+        Assert.Equal(1_000_000, skipList.Count);
+    
+        // Log performance (optional, for analysis)
+        testOutputHelper.WriteLine($"Contains time: {containsTime} ms");
+        testOutputHelper.WriteLine($"Find time: {findTime} ms");
+    }
 }

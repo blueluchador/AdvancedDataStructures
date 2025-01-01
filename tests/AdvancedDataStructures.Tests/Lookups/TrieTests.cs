@@ -1,11 +1,11 @@
 using AdvancedDataStructures.Lookups;
 
-namespace AdvancedDataStructures.Tests.Trees;
+namespace AdvancedDataStructures.Tests.Lookups;
 
 public class TrieTests
 {
     [Fact]
-    public void Insert_AddSingleWord_Success()
+    public void Insert_SingleWord_ShouldStoreAndRetrieveSuccessfully()
     {
         var trie = new Trie();
         trie.Insert("apple");
@@ -13,7 +13,7 @@ public class TrieTests
     }
 
     [Fact]
-    public void Insert_AddDuplicateWords_Success()
+    public void Insert_DuplicateWords_ShouldStoreOnceAndRetrieveSuccessfully()
     {
         var trie = new Trie();
         trie.Insert("apple");
@@ -22,7 +22,7 @@ public class TrieTests
     }
 
     [Fact]
-    public void Insert_AddWordWithSharedPrefix_Success()
+    public void Insert_WordsWithSharedPrefix_ShouldStoreAndRetrieveBothSuccessfully()
     {
         var trie = new Trie();
         trie.Insert("apple");
@@ -32,7 +32,7 @@ public class TrieTests
     }
 
     [Fact]
-    public void Search_ExistingWord_ReturnsTrue()
+    public void Search_ExistingWord_ShouldReturnTrue()
     {
         var trie = new Trie();
         trie.Insert("test");
@@ -40,7 +40,7 @@ public class TrieTests
     }
 
     [Fact]
-    public void Search_NonExistingWord_ReturnsFalse()
+    public void Search_NonExistingWord_ShouldReturnFalse()
     {
         var trie = new Trie();
         trie.Insert("test");
@@ -48,7 +48,7 @@ public class TrieTests
     }
 
     [Fact]
-    public void Search_WordAsPrefixOnly_ReturnsFalse()
+    public void Search_WordAsPrefixOnly_ShouldReturnFalse()
     {
         var trie = new Trie();
         trie.Insert("testing");
@@ -56,14 +56,14 @@ public class TrieTests
     }
 
     [Fact]
-    public void Search_EmptyString_ReturnsFalse()
+    public void Search_EmptyString_ShouldReturnFalse()
     {
         var trie = new Trie();
         Assert.False(trie.Search(""), "Empty string is not a valid word in the Trie.");
     }
 
     [Fact]
-    public void QueryWords_ValidPrefix_ReturnsCorrectWords()
+    public void QueryWords_ValidPrefix_ShouldReturnMatchingWords()
     {
         var trie = new Trie();
         trie.Insert("apple");
@@ -77,7 +77,7 @@ public class TrieTests
     }
 
     [Fact]
-    public void QueryWords_InvalidPrefix_ReturnsEmptyList()
+    public void QueryWords_InvalidPrefix_ShouldReturnEmptyList()
     {
         var trie = new Trie();
         trie.Insert("test");
@@ -86,7 +86,7 @@ public class TrieTests
     }
 
     [Fact]
-    public void QueryWords_EmptyPrefix_ReturnsAllWords()
+    public void QueryWords_EmptyPrefix_ShouldReturnAllWords()
     {
         var trie = new Trie();
         trie.Insert("apple");
@@ -100,7 +100,7 @@ public class TrieTests
     }
 
     [Fact]
-    public void GetEnumerator_AllWordsInserted_ReturnsCorrectWords()
+    public void GetEnumerator_AllInsertedWords_ShouldReturnAllWords()
     {
         var trie = new Trie();
         trie.Insert("dog");
@@ -114,7 +114,7 @@ public class TrieTests
     }
 
     [Fact]
-    public void GetEnumerator_NoWordsInserted_ReturnsEmptyList()
+    public void GetEnumerator_NoWordsInserted_ShouldReturnEmptyList()
     {
         var trie = new Trie();
         var result = trie.ToList();
@@ -122,21 +122,21 @@ public class TrieTests
     }
 
     [Fact]
-    public void Insert_NullWord_ThrowsException()
+    public void Insert_NullWord_ShouldThrowArgumentNullException()
     {
         var trie = new Trie();
         Assert.Throws<ArgumentNullException>(() => trie.Insert(null!));
     }
 
     [Fact]
-    public void Search_NullWord_ThrowsException()
+    public void Search_NullWord_ShouldThrowArgumentNullException()
     {
         var trie = new Trie();
         Assert.Throws<ArgumentNullException>(() => trie.Search(null!));
     }
 
     [Fact]
-    public void QueryWords_NullWord_ThrowsException()
+    public void QueryWords_NullWord_ShouldThrowArgumentNullException()
     {
         var trie = new Trie();
         Assert.Throws<ArgumentNullException>(() => trie.QueryWords(null!));
@@ -168,7 +168,7 @@ public class TrieTests
     }
 
     [Fact]
-    public void Insert_And_Search_ValidWord_ShouldWork()
+    public void Insert_And_Search_ValidWord_ShouldSucceed()
     {
         var trie = new Trie();
         trie.Insert("apple");
@@ -177,7 +177,7 @@ public class TrieTests
     }
 
     [Fact]
-    public void CaseInsensitive_SearchExistingWord_ReturnsTrue()
+    public void CaseInsensitive_SearchWord_ShouldReturnTrueForMatchingCases()
     {
         var trie = new Trie();
         trie.Insert("apple");
@@ -185,7 +185,7 @@ public class TrieTests
     }
     
     [Fact]
-    public void CaseInsensitive_QueryWords_ValidPrefix_ReturnsSubtreeWords()
+    public void CaseInsensitive_QueryWords_Prefix_ShouldReturnAllMatchingWords()
     {
         var trie = new Trie();
         trie.Insert("App");
@@ -199,7 +199,7 @@ public class TrieTests
     }
 
     [Fact]
-    public void CaseSensitive_SearchExistingWord_ShouldPassAndFailCorrectly()
+    public void CaseSensitive_SearchWord_ShouldDifferentiateCases()
     {
         var trie = new Trie(isCaseSensitive: true);
         trie.Insert("Apple");
@@ -208,7 +208,7 @@ public class TrieTests
     }
     
     [Fact]
-    public void CaseSensitive_QueryWords_ShouldReturnSubtreeWords()
+    public void CaseSensitive_QueryWords_Prefix_ShouldReturnMatchingWords()
     {
         var trie = new Trie(isCaseSensitive: true);
         trie.Insert("App");
@@ -222,7 +222,7 @@ public class TrieTests
     }
     
     [Fact]
-    public void CaseSensitive_QueryWords_ShouldReturnEmpty()
+    public void CaseSensitive_QueryWords_InvalidPrefix_ShouldReturnEmpty()
     {
         var trie = new Trie(isCaseSensitive: true);
         trie.Insert("App");
