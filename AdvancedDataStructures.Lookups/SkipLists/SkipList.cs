@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 
 namespace AdvancedDataStructures.Lookups.SkipLists;
 
-public class SkipList<T> : ICollection<T>
+public class SkipList<T> : ISkipList<T>
 {
     private const double Probability = 0.5;
     private static readonly Random Random = new(); 
@@ -200,7 +200,7 @@ public class SkipList<T> : ICollection<T>
         return current.Value;
     }
 
-    public T FindOrDefault(T value, T defaultValue = default!)
+    public T? FindOrDefault(T value, T? defaultValue = default)
     {
         ArgumentNullException.ThrowIfNull(value);
         

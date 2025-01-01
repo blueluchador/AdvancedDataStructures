@@ -1,6 +1,6 @@
 namespace AdvancedDataStructures.Lookups.SkipLists;
 
-public class ComparableSkipList<T> : SkipList<T> where T : IComparable<T>, IEquatable<T>
+public class ComparableSkipList<T> : SkipList<T>, IComparableSkipList<T> where T : IComparable<T>, IEquatable<T>
 {
     public override void Add(T value)
     {
