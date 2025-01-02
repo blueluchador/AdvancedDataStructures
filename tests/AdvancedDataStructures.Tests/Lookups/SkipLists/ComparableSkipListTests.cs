@@ -19,9 +19,32 @@ public class ComparableSkipListTests
 
         public override string ToString() => $"Id: {Id}, Name: {Name}";
     }
+    
+    [Fact]
+    public void ParameterizedConstructor_WithInitialObjects_ShouldInitializeCorrectly()
+    {
+        // Arrange
+        var initialObjects = new[]
+        {
+            new MyObject { Id = 1, Name = "Object1" },
+            new MyObject { Id = 2, Name = "Object2" },
+            new MyObject { Id = 3, Name = "Object3" }
+        };
+
+        // Act
+        var skipList = new ComparableSkipList<MyObject>(initialObjects);
+
+        // Assert
+        foreach (var obj in initialObjects)
+        {
+            Assert.Contains(obj, skipList);
+        }
+
+        Assert.Equal(initialObjects.Length, skipList.Count);
+    }
 
     [Fact]
-    public void Add_ValidUniqueValue_ShouldAddSuccessfully()
+    public void Add_UniqueValue_ShouldAddSuccessfully()
     {
         // Arrange
         var skipList = new ComparableSkipList<MyObject>();
@@ -56,9 +79,37 @@ public class ComparableSkipListTests
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() => skipList.Add(null!));
     }
-
+    
     [Fact]
-    public void Update_ExistingValue_ShouldUpdateSuccessfully()
+    public void AddRange_WithUniqueObjects_ShouldAddCorrectly()
+    {
+        // Arrange
+        var initialObjects = new[]
+        {
+            new MyObject { Id = 1, Name = "Object1" },
+            new MyObject { Id = 2, Name = "Object2" },
+            new MyObject { Id = 3, Name = "Object3" }
+        };
+        var skipList = new ComparableSkipList<MyObject>(initialObjects);
+
+        // Act
+        var newObjects = new[]
+        {
+            new MyObject { Id = 4, Name = "Object4" },
+            new MyObject { Id = 5, Name = "Object5" }
+        };
+        skipList.AddRange(newObjects);
+
+        // Assert
+        foreach (var obj in newObjects)
+        {
+            Assert.True(skipList.Contains(obj), $"The object {obj} was not added to the skip list.");
+        }
+        Assert.Equal(initialObjects.Length + newObjects.Length, skipList.Count);
+    }
+    
+    [Fact]
+    public void Update_WithExistingValue_ShouldUpdateSuccessfully()
     {
         // Arrange
         var skipList = new ComparableSkipList<MyObject>();

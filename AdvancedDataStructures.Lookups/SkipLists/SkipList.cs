@@ -29,38 +29,15 @@ public class SkipList<T> : ISkipList<T>
     
     public SkipList(IEnumerable<T> collection)
     {
+        AddRange(collection);
+    }
+
+    public void AddRange(IEnumerable<T> collection)
+    {
         ArgumentNullException.ThrowIfNull(collection);
-    
         var items = collection.AsParallel().OrderBy(x => x).ToList();
-        items.Sort();
-    
         BulkAdd(items);
     }
-    // public SkipList(IEnumerable<T> collection)
-    // {
-    //     const int maxBatchSize = 10_000;
-    //     
-    //     ArgumentNullException.ThrowIfNull(collection);
-    //
-    //     // Sort the collection and convert it to a list
-    //     var items = collection.AsParallel().OrderBy(x => x).ToList();
-    //
-    //     int totalItems = items.Count;
-    //     int calculatedBatchSize = (int)Math.Ceiling((double)totalItems / Environment.ProcessorCount);
-    //
-    //     // Ensure batch size does not exceed the maximum allowed size
-    //     int batchSize = Math.Min(calculatedBatchSize, maxBatchSize);
-    //
-    //     // Determine chunk size
-    //     int chunkSize = batchSize * Environment.ProcessorCount;
-    //
-    //     // Process in chunks
-    //     for (int i = 0; i < totalItems; i += chunkSize)
-    //     {
-    //         int end = Math.Min(i + chunkSize, totalItems);
-    //         BulkAdd(items, i, end);
-    //     }
-    // }
     
     private void BulkAdd(List<T> items)
     {
@@ -179,10 +156,30 @@ public class SkipList<T> : ISkipList<T>
         }
     }
 
+    // public T Find(T value)
+    // {
+    //     ArgumentNullException.ThrowIfNull(value);
+    //     
+    //     var current = Head;
+    //
+    //     for (int i = MaxLevel; i >= 0; i--)
+    //     {
+    //         while (current.Forward.ContainsKey(i) && Comparer<T>.Default.Compare(current.Forward[i].Value, value) < 0)
+    //         {
+    //             current = current.Forward[i];
+    //         }
+    //     }
+    //
+    //     // Move to the next node horizontally
+    //     current = current.Forward.GetValueOrDefault(0);
+    //     
+    //     if (current == null) throw new KeyNotFoundException();
+    //     return current.Value;
+    // }
     public T Find(T value)
     {
         ArgumentNullException.ThrowIfNull(value);
-        
+
         var current = Head;
 
         for (int i = MaxLevel; i >= 0; i--)
@@ -195,8 +192,13 @@ public class SkipList<T> : ISkipList<T>
 
         // Move to the next node horizontally
         current = current.Forward.GetValueOrDefault(0);
-        
-        if (current == null) throw new KeyNotFoundException();
+
+        // Verify the found node matches the search value
+        if (current == null || Comparer<T>.Default.Compare(current.Value, value) != 0)
+        {
+            throw new KeyNotFoundException();
+        }
+
         return current.Value;
     }
 

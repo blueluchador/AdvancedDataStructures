@@ -2,6 +2,10 @@ namespace AdvancedDataStructures.Lookups.SkipLists;
 
 public class ComparableSkipList<T> : SkipList<T>, IComparableSkipList<T> where T : IComparable<T>, IEquatable<T>
 {
+    public ComparableSkipList() {}
+    
+    public ComparableSkipList(IEnumerable<T> collection) : base(collection) {}
+    
     public override void Add(T value)
     {
         ArgumentNullException.ThrowIfNull(value);

@@ -1,10 +1,8 @@
-using System.Diagnostics;
 using AdvancedDataStructures.Lookups.SkipLists;
-using Xunit.Abstractions;
 
 namespace AdvancedDataStructures.Tests.Lookups.SkipLists;
 
-public class SkipListTests(ITestOutputHelper testOutputHelper)
+public class SkipListTests//(ITestOutputHelper testOutputHelper)
 {
     [Fact]
     public void ParameterizedConstructor_WithInitialItems_ShouldInitializeCorrectly()
@@ -47,9 +45,29 @@ public class SkipListTests(ITestOutputHelper testOutputHelper)
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() => skipList.Add(null!));
     }
+    
+    [Fact]
+    public void AddRange_WithNewItems_ShouldAddCorrectly()
+    {
+        // Arrange
+        int[] initialItems = [3, 7, 2, 5, 8, 1, 4, 9, 10, 12, 13];
+        int[] newItems = [ 6, 14, 11 ];
+
+        // Act
+        var skipList = new SkipList<int>(initialItems);
+        skipList.AddRange(newItems);
+
+        // Assert
+        foreach (int item in newItems)
+        {
+            Assert.Contains(item, skipList);
+        }
+
+        Assert.Equal(initialItems.Length + newItems.Length, skipList.Count);
+    }
 
     [Fact]
-    public void Remove_WithExistingItem_ShouldSucceed()
+    public void Remove_ExistingItem_ShouldRemoveCorrectly()
     {
         // Arrange
         var skipList = new SkipList<int> { 1, 2, 3, 4, 5 };
@@ -94,7 +112,7 @@ public class SkipListTests(ITestOutputHelper testOutputHelper)
     public void Find_WithExistingItem_ShouldReturnCorrectValue()
     {
         // Arrange
-        var skipList = new SkipList<int> { 1, 2, 3, 4, 5 };
+        var skipList = new SkipList<int> { 1, 2, 3, 7, 5 };
 
         // Act
         int result = skipList.Find(3);
@@ -130,7 +148,7 @@ public class SkipListTests(ITestOutputHelper testOutputHelper)
     public void CopyTo_WithValidParameters_ShouldCopyItemsCorrectly()
     {
         // Arrange
-        var skipList = new SkipList<int> { 1, 2, 3 };
+        var skipList = new SkipList<int> { 1, 3, 2 };
         int[] array = new int[5];
 
         // Act
@@ -191,33 +209,40 @@ public class SkipListTests(ITestOutputHelper testOutputHelper)
         Assert.Equal(items.OrderBy(x => x).ToList(), enumeratedItems);
     }
     
-    [Fact(Skip = "Sharded skip list not implemented yet")]
-    public void ContainsAndFind_PerformanceTest_ForMillionRecords()
-    {
-        // Arrange
-        var skipList = new SkipList<int>(Enumerable.Range(1, 1_000_000));
-    
-        var stopwatch = new Stopwatch();
-    
-        // Act
-        stopwatch.Start();
-        bool containsResult = skipList.Contains(500_000);
-        stopwatch.Stop();
-        long containsTime = stopwatch.ElapsedMilliseconds;
-    
-        stopwatch.Reset();
-        stopwatch.Start();
-        int findResult = skipList.Find(500_000);
-        stopwatch.Stop();
-        long findTime = stopwatch.ElapsedMilliseconds;
-    
-        // Assert
-        Assert.True(containsResult);
-        Assert.Equal(500_000, findResult);
-        Assert.Equal(1_000_000, skipList.Count);
-    
-        // Log performance (optional, for analysis)
-        testOutputHelper.WriteLine($"Contains time: {containsTime} ms");
-        testOutputHelper.WriteLine($"Find time: {findTime} ms");
-    }
+//     [Fact]
+//     public void ContainsAndFind_PerformanceTest_ForMillionRecords()
+//     {
+//         // Arrange
+//         const int rangePerShard = 100_000;
+//         const int numShards = 10;
+//
+//         var shardedSkipList = new ShardedSkipList<int, SkipList<int>>(
+//             numShards,
+//             value => (value - 1) / rangePerShard);
+//         
+//         shardedSkipList.AddRange(Enumerable.Range(1, 1_000_000));
+//
+//         var stopwatch = new Stopwatch();
+//         
+//         // Act
+//         stopwatch.Start();
+//         bool containsResult = shardedSkipList.Contains(500_000);
+//         stopwatch.Stop();
+//         long containsTime = stopwatch.ElapsedMilliseconds;
+//         
+//         stopwatch.Reset();
+//         stopwatch.Start();
+//         int findResult = shardedSkipList.Find(500_000);
+//         stopwatch.Stop();
+//         long findTime = stopwatch.ElapsedMilliseconds;
+//         
+//         // Assert
+//         Assert.True(containsResult);
+//         Assert.Equal(500_000, findResult);
+//         Assert.Equal(1_000_000, shardedSkipList.Count);
+//         
+//         // Log performance (optional, for analysis)
+//         testOutputHelper.WriteLine($"Contains time: {containsTime} ms");
+//         testOutputHelper.WriteLine($"Find time: {findTime} ms");
+//     }
 }
