@@ -154,28 +154,9 @@ public class SkipList<T> : ISkipList<T>
             array[i++] = current.Value;
             current = current.Forward.GetValueOrDefault(0);
         }
+        Array.Sort(array);
     }
-
-    // public T Find(T value)
-    // {
-    //     ArgumentNullException.ThrowIfNull(value);
-    //     
-    //     var current = Head;
-    //
-    //     for (int i = MaxLevel; i >= 0; i--)
-    //     {
-    //         while (current.Forward.ContainsKey(i) && Comparer<T>.Default.Compare(current.Forward[i].Value, value) < 0)
-    //         {
-    //             current = current.Forward[i];
-    //         }
-    //     }
-    //
-    //     // Move to the next node horizontally
-    //     current = current.Forward.GetValueOrDefault(0);
-    //     
-    //     if (current == null) throw new KeyNotFoundException();
-    //     return current.Value;
-    // }
+    
     public T Find(T value)
     {
         ArgumentNullException.ThrowIfNull(value);

@@ -195,17 +195,17 @@ public class SkipListTests
         Assert.Contains(2, skipList);
     }
 
-    [Fact(Skip = "Need to inspect how copy to is implemented")]
+    [Fact]
     public void Enumerator_WithItems_ShouldIterateCorrectly()
     {
         // Arrange
         int[] items = [4, 1, 7, 3, 2, 6, 5, 8, 9, 10];
         var skipList = new SkipList<int>(items);
 
-        // Act
-        var enumeratedItems = skipList.ToList();
+        // // Act
+        // var enumeratedItems = skipList
 
         // Assert
-        Assert.Equal(items.OrderBy(x => x).ToList(), enumeratedItems);
+        Assert.Equal(items.OrderBy(x => x).ToList(), skipList);
     }
 }

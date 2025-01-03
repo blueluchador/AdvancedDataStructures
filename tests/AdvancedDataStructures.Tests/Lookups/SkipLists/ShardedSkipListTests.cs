@@ -7,7 +7,7 @@ namespace AdvancedDataStructures.Tests.Lookups.SkipLists;
 public class ShardedSkipListTests(ITestOutputHelper testOutputHelper)
 {
     private readonly Func<int, int> _shardFunction = value => value % 3;
-    
+
     [Fact]
     public void Constructor_WithNumShardsLessThanOne_ShouldThrowArgumentOutOfRangeException()
     {
@@ -66,7 +66,7 @@ public class ShardedSkipListTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var skipList = new ShardedSkipList<int>(3, _shardFunction) { 3, 2, 1 };
-        
+
         // Act
         int[] array = new int[5];
         skipList.CopyTo(array, 0);
@@ -150,41 +150,41 @@ public class ShardedSkipListTests(ITestOutputHelper testOutputHelper)
         // Assert
         Assert.Equal(new[] { 1, 2, 3 }, items);
     }
-    
-     [Fact(Skip = "Created for testing performance")]
-     public void ContainsAndFind_PerformanceTest_ForMillionRecords()
-     {
-         // Arrange
-         const int rangePerShard = 100_000;
-         const int numShards = 10;
 
-         var shardedSkipList = new ShardedSkipList<int>(
-             numShards,
-             value => (value - 1) / rangePerShard);
-         
-         shardedSkipList.AddRange(Enumerable.Range(1, 1_000_000));
+    [Fact(Skip = "Created for testing performance")]
+    public void ContainsAndFind_PerformanceTest_ForMillionRecords()
+    {
+        // Arrange
+        const int rangePerShard = 100_000;
+        const int numShards = 10;
 
-         var stopwatch = new Stopwatch();
-         
-         // Act
-         stopwatch.Start();
-         bool containsResult = shardedSkipList.Contains(500_000);
-         stopwatch.Stop();
-         long containsTime = stopwatch.ElapsedMilliseconds;
-         
-         stopwatch.Reset();
-         stopwatch.Start();
-         int findResult = shardedSkipList.Find(500_000);
-         stopwatch.Stop();
-         long findTime = stopwatch.ElapsedMilliseconds;
-         
-         // Assert
-         Assert.True(containsResult);
-         Assert.Equal(500_000, findResult);
-         Assert.Equal(1_000_000, shardedSkipList.Count);
-         
-         // Log performance (optional, for analysis)
-         testOutputHelper.WriteLine($"Contains time: {containsTime} ms");
-         testOutputHelper.WriteLine($"Find time: {findTime} ms");
-     }
+        var shardedSkipList = new ShardedSkipList<int>(
+            numShards,
+            value => (value - 1) / rangePerShard);
+
+        shardedSkipList.AddRange(Enumerable.Range(1, 1_000_000));
+
+        var stopwatch = new Stopwatch();
+
+        // Act
+        stopwatch.Start();
+        bool containsResult = shardedSkipList.Contains(500_000);
+        stopwatch.Stop();
+        long containsTime = stopwatch.ElapsedMilliseconds;
+
+        stopwatch.Reset();
+        stopwatch.Start();
+        int findResult = shardedSkipList.Find(500_000);
+        stopwatch.Stop();
+        long findTime = stopwatch.ElapsedMilliseconds;
+
+        // Assert
+        Assert.True(containsResult);
+        Assert.Equal(500_000, findResult);
+        Assert.Equal(1_000_000, shardedSkipList.Count);
+
+        // Log performance (optional, for analysis)
+        testOutputHelper.WriteLine($"Contains time: {containsTime} ms");
+        testOutputHelper.WriteLine($"Find time: {findTime} ms");
+    }
 }

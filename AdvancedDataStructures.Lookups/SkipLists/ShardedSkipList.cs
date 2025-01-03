@@ -13,7 +13,7 @@ public abstract class ShardedSkipList<T, TShard> : ISkipList<T> where TShard : I
     public int Count => _shards.Sum(s => s.Count);
     public bool IsReadOnly => false;
 
-    public ShardedSkipList(int shardCount, Func<T, int> shardFunction)
+    protected ShardedSkipList(int shardCount, Func<T, int> shardFunction)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(shardCount, 1);
 
@@ -37,11 +37,12 @@ public abstract class ShardedSkipList<T, TShard> : ISkipList<T> where TShard : I
     
     public virtual void CopyTo(T[] array, int arrayIndex)
     {
+        var allItems = new List<T>();
         foreach (var shard in _shards)
         {
-            shard.CopyTo(array, arrayIndex);
-            arrayIndex += shard.Count;
+            allItems.AddRange(shard.ToArray());
         }
+        allItems.CopyTo(array, arrayIndex);
         Array.Sort(array);
     }
 
