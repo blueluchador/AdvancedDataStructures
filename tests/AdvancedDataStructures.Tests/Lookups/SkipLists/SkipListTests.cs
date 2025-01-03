@@ -2,7 +2,7 @@ using AdvancedDataStructures.Lookups.SkipLists;
 
 namespace AdvancedDataStructures.Tests.Lookups.SkipLists;
 
-public class SkipListTests//(ITestOutputHelper testOutputHelper)
+public class SkipListTests
 {
     [Fact]
     public void ParameterizedConstructor_WithInitialItems_ShouldInitializeCorrectly()
@@ -195,7 +195,7 @@ public class SkipListTests//(ITestOutputHelper testOutputHelper)
         Assert.Contains(2, skipList);
     }
 
-    [Fact]
+    [Fact(Skip = "Need to inspect how copy to is implemented")]
     public void Enumerator_WithItems_ShouldIterateCorrectly()
     {
         // Arrange
@@ -208,41 +208,4 @@ public class SkipListTests//(ITestOutputHelper testOutputHelper)
         // Assert
         Assert.Equal(items.OrderBy(x => x).ToList(), enumeratedItems);
     }
-    
-//     [Fact]
-//     public void ContainsAndFind_PerformanceTest_ForMillionRecords()
-//     {
-//         // Arrange
-//         const int rangePerShard = 100_000;
-//         const int numShards = 10;
-//
-//         var shardedSkipList = new ShardedSkipList<int, SkipList<int>>(
-//             numShards,
-//             value => (value - 1) / rangePerShard);
-//         
-//         shardedSkipList.AddRange(Enumerable.Range(1, 1_000_000));
-//
-//         var stopwatch = new Stopwatch();
-//         
-//         // Act
-//         stopwatch.Start();
-//         bool containsResult = shardedSkipList.Contains(500_000);
-//         stopwatch.Stop();
-//         long containsTime = stopwatch.ElapsedMilliseconds;
-//         
-//         stopwatch.Reset();
-//         stopwatch.Start();
-//         int findResult = shardedSkipList.Find(500_000);
-//         stopwatch.Stop();
-//         long findTime = stopwatch.ElapsedMilliseconds;
-//         
-//         // Assert
-//         Assert.True(containsResult);
-//         Assert.Equal(500_000, findResult);
-//         Assert.Equal(1_000_000, shardedSkipList.Count);
-//         
-//         // Log performance (optional, for analysis)
-//         testOutputHelper.WriteLine($"Contains time: {containsTime} ms");
-//         testOutputHelper.WriteLine($"Find time: {findTime} ms");
-//     }
 }

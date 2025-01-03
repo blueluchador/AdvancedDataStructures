@@ -2,7 +2,10 @@ using System.Collections;
 
 namespace AdvancedDataStructures.Lookups.SkipLists;
 
-public class ShardedSkipList<T, TShard> : ISkipList<T> where TShard : ISkipList<T>, new()
+public class ShardedSkipList<T>(int shardCount, Func<T, int> shardFunction)
+    : ShardedSkipList<T, SkipList<T>>(shardCount, shardFunction);
+
+public abstract class ShardedSkipList<T, TShard> : ISkipList<T> where TShard : ISkipList<T>, new()
 {
     private readonly Func<T, int> _shardFunction;
     private readonly List<TShard> _shards;
