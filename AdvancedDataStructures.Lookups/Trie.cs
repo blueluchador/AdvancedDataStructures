@@ -17,6 +17,15 @@ public class Trie : IEnumerable<string>
     {
         _isCaseSensitive = isCaseSensitive;
     }
+    
+    public Trie(IEnumerable<string> collection, bool isCaseSensitive = false) // Default to case-insensitive
+    {
+        foreach (string word in collection)
+        {
+            Insert(word);
+        }
+        _isCaseSensitive = isCaseSensitive;
+    }
 
     public void Insert(string word)
     {

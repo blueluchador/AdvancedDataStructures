@@ -20,9 +20,18 @@ public class TrieTests
         trie.Insert("apple");
         Assert.True(trie.Search("apple"), "The word 'apple' was found.");
     }
+    
+    [Fact]
+    public void ParameterizedConstructor_WordsInserted_ShouldStoreAndRetrieveThemSuccessfully()
+    {
+        var trie = new Trie(["apricot", "apple", "app"]);
+        Assert.True(trie.Search("apricot"), "The word 'app' was not found.");
+        Assert.True(trie.Search("apple"), "The word 'apple' was found.");
+        Assert.True(trie.Search("app"), "The word 'app' was not found.");
+    }
 
     [Fact]
-    public void Insert_WordsWithSharedPrefix_ShouldStoreAndRetrieveBothSuccessfully()
+    public void Insert_WordsWithSharedPrefix_ShouldStoreAndRetrieveThemSuccessfully()
     {
         var trie = new Trie();
         trie.Insert("apple");
