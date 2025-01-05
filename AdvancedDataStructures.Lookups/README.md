@@ -3,9 +3,9 @@
 
 The `Lookups` module contains data structures designed for fast and efficient data retrieval. These structures are optimized for scenarios where quick access to information is critical, whether you're working with strings, objects, or massive datasets.
 
-### Tries
+### Trie
 
-Tries are tree-based data structures that organize strings by splitting them into individual characters. Each path through the tree represents a string, and shared prefixes reduce redundancy, making Tries especially efficient for prefix-based operations.
+Tries (pronounced "try") are tree-based data structures that organize strings by splitting them into individual characters. Each path through the tree represents a string, and shared prefixes reduce redundancy, making Tries especially efficient for prefix-based operations.
 
 **When to Use:**
 - **Autocomplete:** Suggest words or phrases as users type in search bars or text fields.  

@@ -90,6 +90,12 @@ Commonly used in machine learning for classification and decision-making.
 Designed for range minimum or maximum queries.
 
 ## Lookup Structures
+
+The Lookup module is a core feature of **AdvancedDataStructures**, enabling fast and efficient data retrieval. 
+
+For detailed documentation and examples, check out the [Lookups](https://github.com/blueluchador/AdvancedDataStructures/tree/main/AdvancedDataStructures.Lookups) module.
+
+
 ### 1. Trie (Prefix Tree)
 ![Complete](https://img.shields.io/badge/status-complete-brightgreen)
 #### Use Case Examples
