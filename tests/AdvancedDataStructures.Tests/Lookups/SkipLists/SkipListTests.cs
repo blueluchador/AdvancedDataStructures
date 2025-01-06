@@ -8,7 +8,7 @@ public class SkipListTests
     public void ParameterizedConstructor_WithInitialItems_ShouldInitializeCorrectly()
     {
         // Arrange
-        int[] initialItems = [3, 7, 2, 5, 8, 1, 6, 4, 9, 10];
+        int[]? initialItems = [3, 7, 2, 5, 8, 1, 6, 4, 9, 10];
 
         // Act
         var skipList = new SkipList<int>(initialItems);
@@ -199,7 +199,7 @@ public class SkipListTests
     public void Enumerator_WithItems_ShouldIterateCorrectly()
     {
         // Arrange
-        int[] items = [4, 1, 7, 3, 2, 6, 5, 8, 9, 10];
+        int[]? items = [4, 1, 7, 3, 2, 6, 5, 8, 9, 10];
         var skipList = new SkipList<int>(items);
 
         // // Act

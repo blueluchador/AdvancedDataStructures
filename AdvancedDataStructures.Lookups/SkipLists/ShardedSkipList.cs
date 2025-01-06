@@ -48,9 +48,9 @@ public abstract class ShardedSkipList<T, TShard> : ISkipList<T> where TShard : I
 
     public virtual bool Remove(T item) => GetShard(item).Remove(item);
 
-    public void AddRange(IEnumerable<T> collection)
+    public void AddRange(IEnumerable<T>? collection)
     {
-        var shards = collection
+        List<T[]?> shards = collection
             .GroupBy(_shardFunction)
             .OrderBy(group => group.Key)
             .Select(group => group.ToArray())

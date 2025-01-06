@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Hybr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lookups", "examples\Lookups\Lookups.csproj", "{C4DBE605-E823-4C47-9C53-A89E7D9115C9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{05ED9133-CFA4-4D9C-AF3C-DA78D772737E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,5 +68,8 @@ Global
 		{C4DBE605-E823-4C47-9C53-A89E7D9115C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4DBE605-E823-4C47-9C53-A89E7D9115C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4DBE605-E823-4C47-9C53-A89E7D9115C9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C4DBE605-E823-4C47-9C53-A89E7D9115C9} = {05ED9133-CFA4-4D9C-AF3C-DA78D772737E}
 	EndGlobalSection
 EndGlobal

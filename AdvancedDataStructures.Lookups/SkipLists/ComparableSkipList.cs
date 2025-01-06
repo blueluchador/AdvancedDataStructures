@@ -4,7 +4,7 @@ public class ComparableSkipList<T> : SkipList<T>, IComparableSkipList<T> where T
 {
     public ComparableSkipList() {}
     
-    public ComparableSkipList(IEnumerable<T> collection) : base(collection) {}
+    public ComparableSkipList(IEnumerable<T>? collection) : base(collection) {}
     
     public override void Add(T value)
     {

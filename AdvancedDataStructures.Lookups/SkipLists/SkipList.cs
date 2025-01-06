@@ -27,12 +27,12 @@ public class SkipList<T> : ISkipList<T>
 
     public SkipList() {}
     
-    public SkipList(IEnumerable<T> collection)
+    public SkipList(IEnumerable<T>? collection)
     {
         AddRange(collection);
     }
 
-    public void AddRange(IEnumerable<T> collection)
+    public void AddRange(IEnumerable<T>? collection)
     {
         ArgumentNullException.ThrowIfNull(collection);
         var items = collection.AsParallel().OrderBy(x => x).ToList();
@@ -41,6 +41,15 @@ public class SkipList<T> : ISkipList<T>
     
     private void BulkAdd(List<T> items)
     {
+        if (items.Count <= 10_000)
+        {
+            foreach (var value in items)
+            {
+                Add(value);
+            }
+            return;
+        }
+        
         int count = items.Count;
         int batchSize = (int)Math.Ceiling((double)count / Environment.ProcessorCount);
         if (batchSize > 10_000) batchSize = 10_000;
@@ -70,24 +79,24 @@ public class SkipList<T> : ISkipList<T>
     {
         ArgumentNullException.ThrowIfNull(value);
 
-        var update = new Node[MaxLevel + 1];
-        var current = Head;
-        
-        // Find the insertion point at each level
-        for (int i = MaxLevel; i >= 0; i--)
-        {
-            while (current.Forward.TryGetValue(i, out var next) && Comparer<T>.Default.Compare(next.Value, value) < 0)
-            {
-                current = next;
-            }
-            update[i] = current;
-        }
-        
-        // Generate a random level for the new node
-        int level = RandomLevel();
-
         lock (_lock)
         {
+            var update = new Node[MaxLevel + 1];
+            var current = Head;
+        
+            // Find the insertion point at each level
+            for (int i = MaxLevel; i >= 0; i--)
+            {
+                while (current.Forward.TryGetValue(i, out var next) && Comparer<T>.Default.Compare(next.Value, value) < 0)
+                {
+                    current = next;
+                }
+                update[i] = current;
+            }
+            
+            // Generate a random level for the new node
+            int level = RandomLevel();
+            
             if (level > MaxLevel)
             {
                 for (int i = MaxLevel + 1; i <= level; i++)
@@ -154,7 +163,6 @@ public class SkipList<T> : ISkipList<T>
             array[i++] = current.Value;
             current = current.Forward.GetValueOrDefault(0);
         }
-        Array.Sort(array);
     }
     
     public T Find(T value)
