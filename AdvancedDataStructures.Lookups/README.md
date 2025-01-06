@@ -1,7 +1,9 @@
 
 ## Lookups
 
-The `Lookups` module contains data structures designed for fast and efficient data retrieval. These structures are optimized for scenarios where quick access to information is critical, whether you're working with strings, objects, or massive datasets.
+The **Lookups** module contains data structures designed for fast and efficient data retrieval. These structures are optimized for scenarios where quick access to information is critical, whether you're working with strings, objects, or massive datasets.
+
+Specific examples of using the **Lookups** data structures can be found in [this console app](https://github.com/blueluchador/AdvancedDataStructures/tree/main/examples/Lookups).
 
 ### Trie
 
