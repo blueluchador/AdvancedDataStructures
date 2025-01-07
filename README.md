@@ -117,7 +117,7 @@ This repository is structured into categories based on the types of data structu
 
 The Lookup module is a core feature of **AdvancedDataStructures**, enabling fast and efficient data retrieval. 
 
-For detailed documentation and examples, check out the [Lookups](https://github.com/blueluchador/src/AdvancedDataStructures/tree/main/AdvancedDataStructures.Lookups) module.
+For detailed documentation and examples, check out the [Lookups](https://github.com/blueluchador/AdvancedDataStructures/tree/main/src/AdvancedDataStructures.Lookups) module.
 
 ### 1. Trie (Prefix Tree)
 ![Complete](https://img.shields.io/badge/status-complete-brightgreen)
