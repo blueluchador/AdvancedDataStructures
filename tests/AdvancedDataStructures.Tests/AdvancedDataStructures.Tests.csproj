@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\AdvancedDataStructures.Lookups\AdvancedDataStructures.Lookups.csproj" />
+      <ProjectReference Include="..\..\src\AdvancedDataStructures.Lookups\AdvancedDataStructures.Lookups.csproj" />
     </ItemGroup>
 
 </Project>

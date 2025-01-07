@@ -4,19 +4,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Tree
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Tests", "tests\AdvancedDataStructures.Tests\AdvancedDataStructures.Tests.csproj", "{460EC157-DBF0-449D-A574-211DE313D3ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Lookups", "AdvancedDataStructures.Lookups\AdvancedDataStructures.Lookups.csproj", "{5B90990E-326B-4E00-9DB8-6F72223E8687}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Lookups", "src\AdvancedDataStructures.Lookups\AdvancedDataStructures.Lookups.csproj", "{5B90990E-326B-4E00-9DB8-6F72223E8687}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.RangeQueries", "AdvancedDataStructures.RangeQueries\AdvancedDataStructures.RangeQueries.csproj", "{D298CDF6-0ECD-4939-8D62-227EDB9FDD7D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.RangeQueries", "src\AdvancedDataStructures.RangeQueries\AdvancedDataStructures.RangeQueries.csproj", "{D298CDF6-0ECD-4939-8D62-227EDB9FDD7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Graphs", "AdvancedDataStructures.Graphs\AdvancedDataStructures.Graphs.csproj", "{C09FD7A5-1A44-4CD1-8B44-8F8E60967B91}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Graphs", "src\AdvancedDataStructures.Graphs\AdvancedDataStructures.Graphs.csproj", "{C09FD7A5-1A44-4CD1-8B44-8F8E60967B91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Heaps", "AdvancedDataStructures.Heaps\AdvancedDataStructures.Heaps.csproj", "{E2A540BB-012E-4C9E-847A-19E3A54916F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Heaps", "src\AdvancedDataStructures.Heaps\AdvancedDataStructures.Heaps.csproj", "{E2A540BB-012E-4C9E-847A-19E3A54916F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Probabilistic", "AdvancedDataStructures.Probabilistic\AdvancedDataStructures.Probabilistic.csproj", "{F8DAE1DB-6A58-4851-AD9D-5CEB3D0D4AB2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Probabilistic", "src\AdvancedDataStructures.Probabilistic\AdvancedDataStructures.Probabilistic.csproj", "{F8DAE1DB-6A58-4851-AD9D-5CEB3D0D4AB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.DisjointSets", "AdvancedDataStructures.DisjointSets\AdvancedDataStructures.DisjointSets.csproj", "{555A3FA8-D6FC-4B89-92C2-C80F74D75C73}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.DisjointSets", "src\AdvancedDataStructures.DisjointSets\AdvancedDataStructures.DisjointSets.csproj", "{555A3FA8-D6FC-4B89-92C2-C80F74D75C73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Hybrids", "AdvancedDataStructures.Hybrids\AdvancedDataStructures.Hybrids.csproj", "{D06E3205-6D30-4E42-A754-8029FCD9ABF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedDataStructures.Hybrids", "src\AdvancedDataStructures.Hybrids\AdvancedDataStructures.Hybrids.csproj", "{D06E3205-6D30-4E42-A754-8029FCD9ABF3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lookups", "examples\Lookups\Lookups.csproj", "{C4DBE605-E823-4C47-9C53-A89E7D9115C9}"
 EndProject
