@@ -12,6 +12,7 @@ public class SkipList<T> : ISkipList<T>
     {
         public T Value { get; set; } = value;
         public readonly Dictionary<int, Node> Forward = new();
+        public readonly object NodeLock = new();
     }
     
     private int _count;
@@ -41,28 +42,47 @@ public class SkipList<T> : ISkipList<T>
     
     private void BulkAdd(List<T> items)
     {
-        if (items.Count <= 10_000)
+        ArgumentNullException.ThrowIfNull(items);
+
+        // Sort the input items
+        items = items.AsParallel().OrderBy(x => x).ToList();
+
+        var current = Head;
+        var newHead = new Node(default!); // Temporary head for the new skip list
+        var tempCurrent = newHead;
+
+        int maxLevel = MaxLevel;
+
+        // Merge the existing skip list with the new sorted items
+        foreach (var item in items)
         {
-            foreach (var value in items)
+            while (current.Forward.TryGetValue(0, out var next) && Comparer<T>.Default.Compare(next.Value, item) < 0)
             {
-                Add(value);
+                tempCurrent.Forward[0] = next;
+                tempCurrent = next;
+                current = next;
             }
-            return;
+
+            var newNode = new Node(item);
+            tempCurrent.Forward[0] = newNode;
+            tempCurrent = newNode;
         }
-        
-        int count = items.Count;
-        int batchSize = (int)Math.Ceiling((double)count / Environment.ProcessorCount);
-        if (batchSize > 10_000) batchSize = 10_000;
-    
-        var partitioner = Partitioner.Create(0, count, batchSize);
-    
-        Parallel.ForEach(partitioner, range =>
+
+        // Add remaining nodes from the original skip list
+        while (current.Forward.TryGetValue(0, out var next))
         {
-            for (int i = range.Item1; i < range.Item2; i++)
-            {
-                Add(items[i]);
-            }
-        });
+            tempCurrent.Forward[0] = next;
+            tempCurrent = next;
+            current = next;
+        }
+
+        lock (_lock)
+        {
+            // Replace the original head with the new merged list
+            Head = newHead;
+            MaxLevel = maxLevel;
+            _count += items.Count;
+        }
     }
 
     private int RandomLevel()
@@ -78,25 +98,25 @@ public class SkipList<T> : ISkipList<T>
     public virtual void Add(T value)
     {
         ArgumentNullException.ThrowIfNull(value);
-
-        lock (_lock)
-        {
-            var update = new Node[MaxLevel + 1];
-            var current = Head;
         
-            // Find the insertion point at each level
-            for (int i = MaxLevel; i >= 0; i--)
+        var update = new Node[MaxLevel + 1];
+        var current = Head;
+
+        // Find the insertion point at each level
+        for (int i = MaxLevel; i >= 0; i--)
+        {
+            while (current.Forward.TryGetValue(i, out var next) && Comparer<T>.Default.Compare(next.Value, value) < 0)
             {
-                while (current.Forward.TryGetValue(i, out var next) && Comparer<T>.Default.Compare(next.Value, value) < 0)
-                {
-                    current = next;
-                }
-                update[i] = current;
+                current = next;
             }
-            
-            // Generate a random level for the new node
-            int level = RandomLevel();
-            
+            update[i] = current;
+        }
+
+        // Generate a random level for the new node
+        int level = RandomLevel();
+
+        lock (Head.NodeLock) // Lock only during level adjustment
+        {
             if (level > MaxLevel)
             {
                 for (int i = MaxLevel + 1; i <= level; i++)
@@ -105,9 +125,12 @@ public class SkipList<T> : ISkipList<T>
                 }
                 MaxLevel = level;
             }
-            
-            var newNode = new Node(value);
-            for (int i = 0; i <= level; i++)
+        }
+
+        var newNode = new Node(value);
+        for (int i = 0; i <= level; i++)
+        {
+            lock (update[i].NodeLock) // Lock only the affected nodes
             {
                 if (update[i].Forward.TryGetValue(i, out var next))
                 {
@@ -115,9 +138,9 @@ public class SkipList<T> : ISkipList<T>
                 }
                 update[i].Forward[i] = newNode;
             }
-            
-            _count++;
         }
+
+        Interlocked.Increment(ref _count);
     }
 
     public void Clear()

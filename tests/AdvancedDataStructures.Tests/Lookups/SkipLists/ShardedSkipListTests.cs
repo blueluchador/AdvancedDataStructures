@@ -150,23 +150,24 @@ public class ShardedSkipListTests(ITestOutputHelper testOutputHelper)
         // Assert
         Assert.Equal(new[] { 1, 2, 3 }, items);
     }
-
-    [Fact(Skip = "Created for testing performance")]
-    public void ContainsAndFind_PerformanceTest_ForMillionRecords()
+    
+    [Fact]
+    public void BulkAdd_ContainsAndFind_ForMillionRecords_ShouldCompleteWithinMillisecond()
     {
         // Arrange
         const int rangePerShard = 100_000;
         const int numShards = 10;
 
+        var stopwatch = new Stopwatch();
         var shardedSkipList = new ShardedSkipList<int>(
             numShards,
             value => (value - 1) / rangePerShard);
 
-        shardedSkipList.AddRange(Enumerable.Range(1, 1_000_000));
-
-        var stopwatch = new Stopwatch();
-
         // Act
+        stopwatch.Start();
+        shardedSkipList.AddRange(Enumerable.Range(1, 1_000_000));
+        long bulkAddTime = stopwatch.ElapsedMilliseconds;
+        
         stopwatch.Start();
         bool containsResult = shardedSkipList.Contains(500_000);
         stopwatch.Stop();
@@ -182,8 +183,12 @@ public class ShardedSkipListTests(ITestOutputHelper testOutputHelper)
         Assert.True(containsResult);
         Assert.Equal(500_000, findResult);
         Assert.Equal(1_000_000, shardedSkipList.Count);
+        Assert.True(bulkAddTime < 1000);
+        Assert.True(containsTime < 1000);
+        Assert.True(findTime < 1000);
 
         // Log performance (optional, for analysis)
+        testOutputHelper.WriteLine($"Bulk add time: {bulkAddTime} ms");
         testOutputHelper.WriteLine($"Contains time: {containsTime} ms");
         testOutputHelper.WriteLine($"Find time: {findTime} ms");
     }
